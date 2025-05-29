@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+   Skyteck Liga
+  </title>
+ </head>
+ <body>
+  'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { BookText, UserPlus, PencilLine, Calendar } from 'lucide-react'
+import { User, onAuthStateChanged } from 'firebase/auth'
+import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore'
+import { signOut } from 'firebase/auth'
+import { db, auth } from '@/lib/firebase'
+import { useRequireVerifiedUser } from '@/lib/authCheck'
+
+
+  useRequireVerifiedUser()
+  const [user, setUser] = useState
+  <user null="" |="">
+   (null)
+  const [roles, setRoles] = useState
+   <string[]>
+    ([])
+  const [clubs, setClubs] = useState
+    <string[]>
+     ([])
+  const [startsThisYear, setStartsThisYear] = useState
+     <number>
+      (0)
+  const router = useRouter()
+
+  // 🔐 Haal ingelogde gebruiker en rol op
+   =&gt; {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) =&gt; {
+      if (currentUser) {
+        setUser(currentUser)
+
+        const docRef = doc(db, 'users', currentUser.uid)
+        const userDoc = await getDoc(docRef)
+
+        if (userDoc.exists()) {
+          const data = userDoc.data()
+          setRoles(Array.isArray(data.roles) ? data.roles :(data.roles?.split(',') || []))
+          setClubs(data.clubs || []
+      } else {
+        setUser(null)
+        setRoles([])
+        setClubs([]
+    })
+
+    ) =&gt; unsubscribe(, [])
+
+  // 📅 Tel starts dit jaar
+   =&gt; {
+    const fetchStarts = async () =&gt; {
+      if (!user) return
+
+      const currentYear = new Date().getFullYear()
+      const flightsRef = collection(db, 'flights')
+      const snapshot = await getDocs(query(flightsRef, where('userId', '==', user.uid)))
+
+      const flightsThisYear = snapshot.docs.filter(doc =&gt; {
+        const flight = doc.data()
+        const flightYear = new Date(flight.date).getFullYear()
+        return flightYear === currentYear
+      })
+
+      setStartsThisYear(flightsThisYear.length
+
+    fetchStarts(, [user])
+
+  // Bepaal toegang op basis van rollen
+  const hasAccess = roles.some(role =&gt;
+    ['admin', 'hoofd-admin', '(co)admin'].includes(role)
+    )
+
+  // 🔓 Uitloggen
+  const handleLogout = async () =&gt; {
+    await signOut(auth)
+    router.push('/login'
+      <div class="p-6">
+       <h1 class="text-2xl font-bold mb-4">
+        Welkom op je Dashboard
+       </h1>
+       {user &amp;&amp;
+       <p>
+        Ingelogd als:
+        <strong>
+         {user.email}
+        </strong>
+       </p>
+       }
+      {roles &amp;&amp;
+       <p>
+        Rol:
+        <strong>
+         {Array.isArray(roles) ? roles.join(', ') : roles}
+        </strong>
+       </p>
+       }
+      {roles &amp;&amp;
+       <p>
+        Starts dit jaar:
+        <strong>
+         {startsThisYear}
+        </strong>
+       </p>
+       }
+      {clubs.length &gt; 0 &amp;&amp; (
+       <p>
+        Clubs:
+        <strong>
+         {clubs.join(', '
+        </strong>
+       </p>
+       <div class="flex gap-4 mt-6 flex-wrap">
+        {/* vliegdagen (voor iedereen) */}
+        <button =="" onclick="{()">
+         router.push('/kalender'
+          class="p-4 border rounded flex flex-col items-center justify-center hover:bg-gray-100 transistion w-32"
+          &gt;
+            &lt; Calendar class="w-5 h-5"/&gt;
+          Kalender
+        </button>
+        {/* Logboek (voor iedereen) */}
+        <button =="" onclick="{()">
+         router.push('/logboek'
+          class="p-4 border rounded flex flex-col items-center justify-center hover:bg-gray-100 transition w-32"
+        &gt;
+         <booktext class="h-6 w-6 mb-1 text-blue-600">
+         </booktext>
+         <span class="text-sm">
+          Logboek
+         </span>
+        </button>
+        {/* Vluchten ingeven (admin + co-admin + hoofd-admin) */}
+        {hasAccess &amp;&amp; (
+        <button =="" onclick="{()">
+         router.push('/vluchten'
+            class="p-4 border rounded flex flex-col items-center justify-center hover:bg-gray-100 transition w-32"
+          &gt;
+         <pencilline class="h-6 w-6 mb-1 text-green-600">
+         </pencilline>
+         <span class="text-sm text-center">
+          Vluchten ingeven
+         </span>
+        </button>
+        {/* Lid toevoegen (alleen voor admins) */}
+        {hasAccess &amp;&amp; (
+        <button =="" onclick="{()">
+         router.push('/admin/manageUsers'
+            class="p-4 border rounded flex flex-col items-center justify-center hover:bg-gray-100 transition w-32"
+          &gt;
+         <userplus class="h-6 w-6 mb-1 text-blue-600">
+         </userplus>
+         <span class="text-sm">
+          Leden
+         </span>
+        </button>
+       </div>
+       <button class="mt-6 bg-red-500 text-white px-4 py-2 rounded" onclick="{handleLogout}">
+        Uitloggen
+       </button>
+      </div>
+     </number>
+    </string[]>
+   </string[]>
+  </user>
+ </body>
+</html>

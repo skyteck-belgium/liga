@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+   Skyteck Liga
+  </title>
+ </head>
+ <body>
+  'use client'
+
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+
+
+  const router = useRouter()
+
+   =&gt; {
+    router.push('/login') // Of '/dashboard' als je dat liever hebt
+  }, [router])
+
+  return null
+}
+ </body>
+</html>

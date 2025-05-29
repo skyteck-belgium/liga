@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+   Skyteck Liga
+  </title>
+ </head>
+ <body>
+  import './globals.css'
+import { Inter } from 'next/font/google'
+import DashboardLink from '@/components/DashboardLink'
+import { AuthProvider } from '@/context/AuthContext'
+
+const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
+
+export const metadata = {
+  title: 'SkyTeck Liga',
+  description: 'Luchtvaartapp voor clubs en piloten',
+}
+  <html class="{inter.variable}" lang="nl">
+   <body>
+    <authprovider>
+     <div class="min-h-screen relative">
+      <dashboardlink>
+      </dashboardlink>
+      <main class="pt-16 px-4">
+       {children}
+      </main>
+     </div>
+    </authprovider>
+   </body>
+  </html>
+ </body>
+</html>

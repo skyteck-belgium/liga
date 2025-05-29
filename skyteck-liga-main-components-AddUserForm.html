@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+   Skyteck Liga
+  </title>
+ </head>
+ <body>
+  'use client'
+
+import { useEffect, useState } from 'react'
+import { collection, getDocs } from 'firebase/firestore'
+import { db } from '@/lib/firebase' // dit is jouw client-side firestore config
+
+const rolesList = ['lid', 'admin', 'instructeur', 'hoofd-admin']
+
+
+  const [email, setEmail] = 
+  const [roles, setRoles] = useState
+  <string[]>
+   ([])
+  const [selectedClubs, setSelectedClubs] = useState
+   <string[]>
+    ([])
+  const [clubs, setClubs] = useState
+    <string[]>
+     ([])
+  const [message, setMessage] = 
+  const [loading, setLoading] = 
+
+   =&gt; {
+    async function fetchClubs(){
+      try {
+        const snapshot = await getDocs(collection(db, 'clubs'))
+        const names = snapshot.docs.map(doc =&gt; doc.data().name as string)
+        setClubs(names catch (error) {
+        console.error('Fout bij het ophalen clubs:', error)
+        setMessage('Fout bij ophalen van clubs.'
+    }
+
+    fetchClubs(, [])
+  
+  function toggleRole(role: string) {
+    setRoles(prev =&gt;
+      prev.includes(role) ? prev.filter(r =&gt; r !== role) : [...prev, role]
+    
+
+  function toggleClub(club: string) {
+    setSelectedClubs(prev =&gt;
+      prev.includes(club) ? prev.filter(c =&gt; c !== club) : [...prev, club]
+    
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setLoading(true)
+    setMessage('')
+
+    if (!email) {
+      setMessage('Email is verplicht.')
+      setLoading(false)
+      return
+    }
+
+    if (roles.length === 0) {
+      setMessage('Selecteer minstens één rol.')
+      setLoading(false)
+      return
+    }
+
+    if (selectedClubs.length === 0) {
+      setMessage('Selecteer minstens één club.')
+      setLoading(false)
+      return
+    }
+
+    try {
+      const res = await fetch('/api/createUser', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, roles, clubs: selectedClubs }),
+      })
+
+      if (res.ok) {
+        setMessage('Gebruiker succesvol toegevoegd. Er is een mail verstuurd.')
+        setEmail('')
+        setRoles([])
+        setSelectedClubs([] else {
+        const data = await res.json()
+        setMessage('Fout: ' + (data.message || 'Onbekende fout')
+    } catch (err) {
+      setMessage('Fout bij verbinden met server.' finally {
+      setLoading(false
+  }
+     <form onsubmit="{handleSubmit}">
+      <div>
+       <label>
+        Email:
+       </label>
+       <input =="" onchange="{e" type="email" value="{email}"/>
+       setEmail(e.target.value
+          required
+        /&gt;
+      </div>
+      <div>
+       <label>
+        Rollen:
+       </label>
+       {rolesList.map(role =&gt; (
+       <label 10="" key="{role}" marginright:="" style="{{" }}="">
+        <input =="" checked="{roles.includes(role" onchange="{()" type="checkbox"/>
+        toggleRole(role
+            /&gt;
+            {role}
+       </label>
+       )
+      </div>
+      <div>
+       <label>
+        Clubs:
+       </label>
+       {clubs.map(club =&gt; (
+       <label 'block'="" display:="" key="{club}" style="{{" }}="">
+        <input =="" checked="{selectedClubs.includes(club" onchange="{()" type="checkbox" value="{club}"/>
+        toggleClub(club
+            /&gt;
+            {club}
+       </label>
+       )
+      </div>
+      <button disabled="{loading}" type="submit">
+       {loading ? 'Verzenden...' : 'Toevoegen'}
+      </button>
+      {message &amp;&amp;
+      <p>
+       {message}
+      </p>
+      }
+     </form>
+    </string[]>
+   </string[]>
+  </string[]>
+ </body>
+</html>

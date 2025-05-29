@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+   Skyteck Liga
+  </title>
+ </head>
+ <body>
+  'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { doc, setDoc } from 'firebase/firestore'
+import { db } from '@/lib/firebase'
+import { useAuth } from '@/context/AuthContext'
+import { useRequireVerifiedUser } from '@/lib/authCheck'
+
+
+  const checked = useRequireVerifiedUser()
+  const { user, roles, loading } = useAuth()
+
+  const [email, setEmail] = 
+  const [selectedRoles, setSelectedRoles] = useState
+  <string[]>
+   ([])
+  const [message, setMessage] = 
+  const [isSubmitting, setIsSubmitting] = 
+
+  const router = useRouter()
+
+  const roleOptions = [
+    'hoofd-admin',
+    'admin',
+    'co-admin',
+    'piloot',
+    'leerling',
+    'instructeur',
+    'Sleeppiloot',
+  ]
+
+  
+    if (selectedRoles.includes(role)) {
+      setSelectedRoles(selectedRoles.filter((r) =&gt; r !== role) else {
+      setSelectedRoles([...selectedRoles, role]
+  }
+
+  const handleSubmit = async (e: React.FormEvent) =&gt; {
+    e.preventDefault()
+
+    if (!email || selectedRoles.length === 0) {
+      alert('⚠️ Vul een e-mail in en kies minstens één rol.')
+      return
+    }
+
+    setIsSubmitting(true)
+    setMessage('')
+
+    try {
+      const res = await fetch('/api/createUser', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, roles: selectedRoles }),
+      })
+
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message)
+
+      const { uid } = data
+
+      await setDoc(doc(db, 'users', uid), {
+        email,
+        roles: selectedRoles,
+        createdAt: new Date().toISOString(),
+      })
+
+      setMessage('✅ Gebruiker toegevoegd en mail verzonden!')
+      setEmail('')
+      setSelectedRoles([] catch (err: any) {
+      console.error('❌ Fout bij toevoegen:', err)
+      setMessage('❌ Fout: ' + err.message finally {
+      setIsSubmitting(false
+  }
+
+  if (!checked || loading) {
+    return
+   <p class="p-6 text-white">
+    🔄 Bezig met laden...
+   </p>
+   }
+
+  if (!roles.includes('admin') &amp;&amp; !roles.includes('co-admin') &amp;&amp; !roles.includes('hoofd-admin')) {
+    return
+   <p class="p-6 text-red-500">
+    ⛔ Alleen admins mogen deze pagina zien.
+   </p>
+   }
+   <div class="p-6 max-w-5xl mx-auto text-white">
+    <h1 class="text-2xl font-bold mb-6">
+     👥 Lid toevoegen
+    </h1>
+    <form class="grid grid-cols-1 md:grid-cols-2 gap-4" onsubmit="{handleSubmit}">
+     {/* Linker kolom */}
+     <div class="space-y-4">
+      <input =="" onchange="{(e)" placeholder="E-mail" type="email" value="{email}"/>
+      setEmail(e.target.value
+            class="border p-2 w-full bg-black text-white"
+            required
+          /&gt;
+     </div>
+     {/* Rechter kolom */}
+     <div class="space-y-4">
+      <p class="font-medium">
+       📌 Rollen
+      </p>
+      <div class="flex flex-wrap gap-4">
+       {roleOptions.map((role) =&gt; (
+       <label class="flex items-center gap-1" key="{role}">
+        <input =="" checked="{selectedRoles.includes(role" onchange="{()" type="checkbox"/>
+        toggleRole(role
+                /&gt;
+                {role}
+       </label>
+       )
+      </div>
+      <button class="bg-blue-600 text-white px-4 py-2 rounded w-full" disabled="{isSubmitting}" type="submit">
+       {isSubmitting ? 'Bezig...' : 'Lid toevoegen'}
+      </button>
+     </div>
+    </form>
+    {message &amp;&amp;
+    <p class="mt-4">
+     {message}
+    </p>
+    }
+   </div>
+  </string[]>
+ </body>
+</html>

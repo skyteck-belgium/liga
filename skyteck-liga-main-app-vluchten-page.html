@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+   Skyteck Liga
+  </title>
+ </head>
+ <body>
+  'use client'
+
+import { useEffect, useState } from 'react'
+import { auth, db } from '@/lib/firebase'
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
+import { onAuthStateChanged } from 'firebase/auth'
+import { useRouter } from 'next/navigation'
+import { useRequireVerifiedUser } from '@/lib/authCheck'
+
+
+  const [userId, setUserId] = 
+  const [date, setDate] = 
+  const [startType, setStartType] = 
+  const [instructor, setInstructor] = 
+  const [remarks, setRemarks] = 
+  const [startTime, setStartTime] = 
+  const [landingTime, setLandingTime] = 
+  const router = useRouter()
+
+   =&gt; {
+    const unsubscribe = onAuthStateChanged(auth, (user) =&gt; {
+      if (!user) return router.push('/login')
+      setUserId(user.uid)
+    ) =&gt; unsubscribe(, [router])
+
+  function calculateDuration(start: string, end: string): number {
+    const [startHours, startMinutes] = start.split(':').map(Number)
+    const [endHours, endMinutes] = end.split(':').map(Number)
+    const startTotal = startHours * 60 + startMinutes
+    const endTotal = endHours * 60 + endMinutes
+    return Math.max(endTotal - startTotal, 0
+
+  const handleSubmit = async (e: React.FormEvent) =&gt; {
+    e.preventDefault()
+    try {
+      const duration = calculateDuration(startTime, landingTime)
+
+      await addDoc(collection(db, 'flights'), {
+        date,
+        startType,
+        instructor,
+        remarks,
+        startTime,
+        landingTime,
+        duration,
+        userId,
+        createdAt: serverTimestamp()
+
+      router.push('/dashboard' catch (error) {
+      alert('Fout bij opslaan')
+      console.error(error
+  }
+  <div class="max-w-md mx-auto p-6">
+   <h1 class="text-2xl font-bold mb-4">
+    Vlucht toevoegen
+   </h1>
+   <form class="space-y-4" onsubmit="{handleSubmit}">
+    <input =="" onchange="{(e)" type="date" value="{date}"/>
+    setDate(e.target.value
+          class="w-full p-2 border"
+          required
+        /&gt;
+    <select =="" onchange="{(e)" value="{startType}">
+     setStartType(e.target.value class="w-full p-2 border"&gt;
+     <option value="lier">
+      Lier
+     </option>
+     <option value="sleep">
+      Sleep
+     </option>
+     <option value="zelfstart">
+      Zelfstart
+     </option>
+    </select>
+    <input =="" onchange="{(e)" type="time" value="{startTime}"/>
+    setStartTime(e.target.value
+          class="w-full p-2 border"
+          required
+        /&gt;
+    <input =="" onchange="{(e)" type="time" value="{landingTime}"/>
+    setLandingTime(e.target.value
+          class="w-full p-2 border"
+          required
+        /&gt;
+    <input =="" onchange="{(e)" type="text" value="{instructor}"/>
+    setInstructor(e.target.value
+          placeholder="Instructeur (optioneel)"
+          class="w-full p-2 border"
+        /&gt;
+    <textarea =="" onchange="{(e)" value="{remarks}"> setRemarks(e.target.value
+          placeholder="Opmerkingen"
+          class="w-full p-2 border"
+        /&gt;
+        <button class="w-full bg-blue-600 text-white p-2 rounded" type="submit">
+          Vlucht opslaan
+        </button>
+      </textarea>
+   </form>
+  </div>
+ </body>
+</html>

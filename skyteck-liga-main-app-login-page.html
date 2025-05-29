@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+   Skyteck Liga
+  </title>
+ </head>
+ <body>
+  'use client'
+
+import { useState } from 'react'
+import {
+  signInWithEmailAndPassword,
+  signOut,
+  sendEmailVerification,
+} from 'firebase/auth'
+import { auth } from '@/lib/firebase'
+import { useRouter } from 'next/navigation'
+
+
+  const [email, setEmail] = 
+  const [password, setPassword] = 
+  const [errorMessage, setErrorMessage] = 
+  const [unverifiedUser, setUnverifiedUser] = useState
+  <any>
+   (null)
+  const [infoMessage, setInfoMessage] = 
+  const router = useRouter()
+
+  const handleLogin = async (e: React.FormEvent) =&gt; {
+    e.preventDefault()
+    setErrorMessage('')
+    setInfoMessage('')
+    setUnverifiedUser(null)
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password)
+      const user = userCredential.user
+
+      if (!user.emailVerified) {
+        setUnverifiedUser(user)
+        await signOut(auth)
+        setErrorMessage('✉️ Je e-mailadres is nog niet geverifieerd. Controleer je inbox.')
+        return
+      }
+
+      router.push('/dashboard' catch (error: any) {
+      setErrorMessage('Login mislukt. Controleer je gegevens.'
+  }
+
+  const handleResendVerification = async () =&gt; {
+    if (!unverifiedUser) return
+    try {
+      await sendEmailVerification(unverifiedUser)
+      setInfoMessage('✅ Verificatie-e-mail opnieuw verzonden. Controleer je inbox.' catch (error) {
+      setErrorMessage('❌ Er ging iets mis bij het verzenden van de verificatiemail.'
+  }
+   <div class="min-h-screen bg-blue-900 flex items-center justify-center">
+    <form class="bg-blue-800 text-white p-6 rounded shadow-md w-80" onsubmit="{handleLogin}">
+     <h2 class="text-xl font-bold mb-4">
+      Login
+     </h2>
+     {errorMessage &amp;&amp; (
+     <div class="bg-red-600 text-white p-2 mb-4 rounded text-sm">
+      {errorMessage}
+     </div>
+     {infoMessage &amp;&amp; (
+     <div class="bg-green-600 text-white p-2 mb-4 rounded text-sm">
+      {infoMessage}
+     </div>
+     <input =="" onchange="{(e)" type="email" value="{email}"/>
+     setEmail(e.target.value
+          placeholder="Email"
+          class="w-full p-2 mb-2 rounded text-black"
+          required
+        /&gt;
+     <input =="" onchange="{(e)" type="password" value="{password}"/>
+     setPassword(e.target.value
+          placeholder="Wachtwoord"
+          class="w-full p-2 mb-4 rounded text-black"
+          required
+        /&gt;
+     <button class="bg-white text-blue-900 font-semibold w-full p-2 rounded" type="submit">
+      Inloggen
+     </button>
+     {unverifiedUser &amp;&amp; (
+     <button class="mt-4 text-sm underline text-white hover:text-blue-300" onclick="{handleResendVerification}" type="button">
+      📩 Verificatiemail opnieuw versturen
+     </button>
+    </form>
+   </div>
+  </any>
+ </body>
+</html>

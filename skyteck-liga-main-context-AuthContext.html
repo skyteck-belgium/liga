@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+   Skyteck Liga
+  </title>
+ </head>
+ <body>
+  'use client'
+
+import { createContext, useContext, useEffect, useState } from 'react'
+import { User, onAuthStateChanged, getIdTokenResult } from 'firebase/auth'
+import { auth } from '@/lib/firebase'
+
+// Type voor de context
+type AuthContextType = {
+  user: User | null
+  setUser: (user: User | null) =&gt; void
+  roles: string[] // Meerdere rollen mogelijk
+  setRoles: (roles: string[]) =&gt; void
+  loading: boolean
+}
+
+// Context aanmaken
+const AuthContext = createContext
+  <authcontexttype>
+   ({
+  user: null,
+  setUser: () =&gt; {},
+  roles: [],
+  setRoles: () =&gt; {},
+  loading: true,
+})
+
+// Provider component
+export 
+  const [user, setUser] = useState
+   <user null="" |="">
+    (null)
+  const [roles, setRoles] = useState
+    <string[]>
+     ([])
+  const [loading, setLoading] = 
+
+   =&gt; {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) =&gt; {
+      setUser(firebaseUser)
+
+      if (firebaseUser) {
+        try {
+          const tokenResult = await getIdTokenResult(firebaseUser)
+          const customRoles = tokenResult.claims.roles || []
+          setRoles(Array.isArray(customRoles) ? customRoles : [customRoles] catch (error) {
+          console.error('❌ Fout bij ophalen van rollen (claims):', error)
+          setRoles([]
+      } else {
+        setRoles([]
+
+      setLoading(false)
+
+    ) =&gt; unsubscribe(, [])
+     <authcontext.provider loading="" roles,="" setroles,="" setuser,="" user,="" value="{{" }}="">
+      {children}
+     </authcontext.provider>
+     // Custom hook om de context te gebruiken
+export const useAuth = () =&gt; useContext(AuthContext)
+    </string[]>
+   </user>
+  </authcontexttype>
+ </body>
+</html>

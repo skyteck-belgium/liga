@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+   Skyteck Liga
+  </title>
+ </head>
+ <body>
+  'use client'
+
+import { useState, useEffect } from 'react'
+import { collection, addDoc, getDocs } from 'firebase/firestore'
+import { db, auth } from '@/lib/firebase'
+
+interface VliegdagFormProps {
+  selectedDate: Date | null
+  clubs: string[]
+}
+
+
+  const [selectedClub, setSelectedClub] = useState
+  <string>
+   (clubs[0] || '')
+  const [startTime, setStartTime] = 
+  const [endTime, setEndTime] = 
+  const [loading, setLoading] = 
+  const [message, setMessage] = 
+
+  const handleSubmit = async (e: React.FormEvent) =&gt; {
+    e.preventDefault()
+    if (!selectedDate) {
+      setMessage('Selecteer eerst een datum.')
+      return
+    }
+    if (!startTime || !endTime) {
+      setMessage('Vul start- en eindtijd in.')
+      return
+    }
+    setLoading(true)
+    setMessage('')
+
+    try {
+      const user = auth.currentUser
+      if (!user) {
+        setMessage('Je bent niet ingelogd.')
+        setLoading(false)
+        return
+      }
+      await addDoc(collection(db, 'vliegdagen'), {
+        userId: user.uid,
+        date: selectedDate.toISOString().substring(0, 10), // yyyy-mm-dd
+        club: selectedClub,
+        startTime,
+        endTime,
+        createdAt: new Date().toISOString(),
+      })
+      setMessage('Je vliegdag is succesvol opgeslagen!')
+      setStartTime('')
+      setEndTime('' catch (error) {
+      setMessage('Er is iets misgegaan: ' + (error as Error).message finally {
+      setLoading(false
+  }
+   <form class="p-4 border rounded max-w-md mt-4" onsubmit="{handleSubmit}">
+    <h2 class="text-lg font-semibold mb-2">
+     Vliegdag invoeren
+    </h2>
+    <p>
+     Datum: {selectedDate ? selectedDate.toLocaleDateString() : 'Geen datum geselecteerd'}
+    </p>
+    <label class="block mt-2">
+     Club:
+     <select =="" onchange="{(e)" value="{selectedClub}">
+      setSelectedClub(e.target.value
+          class="block mt-1 p-1 border rounded w-full"
+        &gt;
+          {clubs.map((club) =&gt; (
+      <option key="{club}" value="{club}">
+       {club}
+      </option>
+      )
+     </select>
+    </label>
+    <label class="block mt-2">
+     Beginuur:
+     <input =="" onchange="{(e)" type="time" value="{startTime}"/>
+     setStartTime(e.target.value
+          class="block mt-1 p-1 border rounded w-full"
+          required
+        /&gt;
+    </label>
+    <label class="block mt-2">
+     Einduur:
+     <input =="" onchange="{(e)" type="time" value="{endTime}"/>
+     setEndTime(e.target.value
+          class="block mt-1 p-1 border rounded w-full"
+          required
+        /&gt;
+    </label>
+    <button class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50" disabled="{loading}" type="submit">
+     {loading ? 'Opslaan...' : 'Opslaan'}
+    </button>
+    {message &amp;&amp;
+    <p class="mt-2 text-sm text-red-600">
+     {message}
+    </p>
+    }
+   </form>
+  </string>
+ </body>
+</html>

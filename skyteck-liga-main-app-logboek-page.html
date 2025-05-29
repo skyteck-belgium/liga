@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+   Skyteck Liga
+  </title>
+ </head>
+ <body>
+  'use client'
+
+import { useEffect, useState } from 'react'
+import { auth, db } from '@/lib/firebase'
+import { collection, query, where, getDocs, orderBy, deleteDoc, doc } from 'firebase/firestore'
+import { onAuthStateChanged } from 'firebase/auth'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { getUserRole } from '@/lib/getUserRole'
+import { useRequireVerifiedUser } from '@/lib/authCheck'
+
+interface Flight {
+  id: string
+  userId: string
+  date: string
+  startType: string
+  instructor?: string
+  remarks?: string
+  startTime?: string
+  landingTime?: string
+  duration?: number // in minuten
+}
+
+
+  const [flights, setFlights] = useState
+  <flight[]>
+   ([])
+  const [userId, setUserId] = useState
+   <string>
+    ('')
+  const [roles, setRoles] = useState
+    <string null="" |="">
+     (null)
+  const router = useRouter()
+
+   =&gt; {
+    const unsubscribe = onAuthStateChanged(auth, async (user) =&gt; {
+      if (!user) return router.push('/login')
+
+      setUserId(user.uid)
+
+      const fetchedRole = await getUserRole(user.uid)
+      setRoles(fetchedRole)
+
+      const flightsRef = collection(db, 'flights')
+      const q = query(flightsRef, orderBy('date', 'desc'))
+      const snapshot = await getDocs(q)
+
+      const data = snapshot.docs.map((doc) =&gt; ({
+        id: doc.id,
+        ...(doc.data() as Omit
+     <flight, 'id'="">
+      ),
+      }))
+
+      // Leden zien alleen eigen vluchten, admin alles
+      const filtered = fetchedRole === 'admin'
+        ? data
+        : data.filter(f =&gt; f.userId === user.uid)
+
+      setFlights(filtered)
+
+    ) =&gt; unsubscribe(, [router])
+
+  const handleDelete = async (id: string) =&gt; {
+    const confirm = window.confirm('Weet je zeker dat je deze vlucht wilt verwijderen?')
+    if (!confirm) return
+    try {
+      await deleteDoc(doc(db, 'flights', id))
+      setFlights(prev =&gt; prev.filter(f =&gt; f.id !== id) catch (error) {
+      console.error('Verwijderen mislukt:', error
+  }
+      <div class="max-w-2xl mx-auto p-6">
+       <h1 class="text-2xl font-bold mb-4">
+        Mijn logboek
+       </h1>
+       {flights.length === 0 ? (
+       <p>
+        Geen vluchten gevonden.
+       </p>
+       ) : (
+       <ul class="space-y-4">
+        {flights.map((flight) =&gt; (
+        <li class="border rounded p-4" key="{flight.id}">
+         <p>
+          <strong>
+           Datum:
+          </strong>
+          {flight.date}
+         </p>
+         <p>
+          <strong>
+           Starttype:
+          </strong>
+          {flight.startType}
+         </p>
+         {flight.instructor &amp;&amp;
+         <p>
+          <strong>
+           Instructeur:
+          </strong>
+          {flight.instructor}
+         </p>
+         }
+              {flight.startTime &amp;&amp;
+         <p>
+          <strong>
+           Starttijd:
+          </strong>
+          {flight.startTime}
+         </p>
+         }
+              {flight.landingTime &amp;&amp;
+         <p>
+          <strong>
+           Landtijd:
+          </strong>
+          {flight.landingTime}
+         </p>
+         }
+              {flight.duration !== undefined &amp;&amp; (
+         <p>
+          <strong>
+           Duur:
+          </strong>
+          {Math.floor(flight.duration / 60u {flight.duration % 60}min
+         </p>
+         {flight.remarks &amp;&amp;
+         <p>
+          <strong>
+           Opmerkingen:
+          </strong>
+          {flight.remarks}
+         </p>
+         }
+         <div class="flex gap-2 mt-2">
+          {/* Alleen leden mogen hun eigen opmerking aanpassen */}
+                {roles !== 'admin' &amp;&amp; flight.userId === userId &amp;&amp; (
+          <link class="text-sm text-blue-600 underline" href="{`/vluchten/${flight.id}/edit-remark`}"/>
+          ✏️ Opmerking aanpassen
+                  
+                
+
+                {/* Alleen admins zien bewerk + verwijder knoppen */}
+                {roles === 'admin' &amp;&amp; (
+                  &lt;&gt;
+          <link class="text-sm text-blue-600 underline" href="{`/vluchten/${flight.id}/edit`}"/>
+          ✏️ Bewerken
+          <button =="" onclick="{()">
+           handleDelete(flight.id
+                      class="text-sm text-red-600 underline"
+                    &gt;
+                      🗑️ Verwijderen
+          </button>
+         </div>
+        </li>
+        )
+       </ul>
+      </div>
+     </flight,>
+    </string>
+   </string>
+  </flight[]>
+ </body>
+</html>

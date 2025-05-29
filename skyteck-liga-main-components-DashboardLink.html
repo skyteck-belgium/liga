@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+   Skyteck Liga
+  </title>
+ </head>
+ <body>
+  'use client'
+
+import { useEffect, useState } from 'react'
+import { onAuthStateChanged } from 'firebase/auth'
+import { auth } from '@/lib/firebase'
+import { usePathname } from 'next/navigation'
+import Link from 'next/link'
+import { ArrowLeftSquare } from 'lucide-react'
+
+
+  const [isLoggedIn, setIsLoggedIn] = 
+  const pathname = usePathname()
+
+   =&gt; {
+    const unsubscribe = onAuthStateChanged(auth, (user) =&gt; {
+      setIsLoggedIn(!!user)
+    ) =&gt; unsubscribe(, [])
+
+  // Niet tonen op de dashboardpagina zelf
+  if (!isLoggedIn || pathname === '/dashboard') return null
+  <link href="/dashboard"/>
+  <div class="absolute top-4 right-4 flex items-center gap-2 p-2 border rounded hover:bg-gray-100 transition">
+   <arrowleftsquare class="w-5 h-5 text-blue-600">
+   </arrowleftsquare>
+   <span class="text-sm">
+    Dashboard
+   </span>
+  </div>
+ </body>
+</html>
